@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/19408/Documents/course/RESUMES/jobtech/BIG/PROJECT_COMPLIANCE/genai_banking_app/mlruns/218596421742703439/6f9837cf8de04e59867a237f7e8ca779/artifacts
+end_time: 1748299364059
+entry_point_name: ''
+experiment_id: '218596421742703439'
+lifecycle_stage: active
+run_id: 6f9837cf8de04e59867a237f7e8ca779
+run_name: aged-tern-219
+run_uuid: 6f9837cf8de04e59867a237f7e8ca779
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748299363566
+status: 3
+tags: []
+user_id: '19408'

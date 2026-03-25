@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/19408/Documents/course/RESUMES/jobtech/BIG/PROJECT_COMPLIANCE/genai_banking_app/mlruns/218596421742703439/dc3e1d72783f4118ac2ab9ab5f0c067d/artifacts
+end_time: 1748299367646
+entry_point_name: ''
+experiment_id: '218596421742703439'
+lifecycle_stage: active
+run_id: dc3e1d72783f4118ac2ab9ab5f0c067d
+run_name: resilient-elk-838
+run_uuid: dc3e1d72783f4118ac2ab9ab5f0c067d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748299367310
+status: 3
+tags: []
+user_id: '19408'

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/19408/Documents/course/RESUMES/jobtech/BIG/PROJECT_COMPLIANCE/genai_banking_app/mlruns/218596421742703439/407bc66fd80a47ad9e1d1a320716ca36/artifacts
+end_time: 1748299365745
+entry_point_name: ''
+experiment_id: '218596421742703439'
+lifecycle_stage: active
+run_id: 407bc66fd80a47ad9e1d1a320716ca36
+run_name: learned-kite-769
+run_uuid: 407bc66fd80a47ad9e1d1a320716ca36
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1748299365497
+status: 3
+tags: []
+user_id: '19408'
