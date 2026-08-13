@@ -1,29 +1,30 @@
 from fastapi import FastAPI
-from Application.routes import transaction, compliance
 from dotenv import load_dotenv
-from Application.routes import shap_explainer
 from prometheus_fastapi_instrumentator import Instrumentator
 
-
-
-
-
-import os
-import openai
+from Application.routes import transaction, compliance, shap_explainer
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
-
-app = FastAPI()
+app = FastAPI(
+    title="GenAI Banking Risk & Compliance Assistant",
+    description=(
+        "AI/ML application for transaction risk prediction, "
+        "SHAP-based explainability, and RAG-powered compliance question answering."
+    ),
+    version="1.0.0",
+)
 
 Instrumentator().instrument(app).expose(app)
 
-# Register the routers
 app.include_router(transaction.router)
 app.include_router(compliance.router)
 app.include_router(shap_explainer.router)
 
-@app.get("/")
+
+@app.get("/", tags=["Health"])
 def root():
-    return {"message": "GenAI Banking app"}
+    return {
+        "message": "GenAI Banking Risk & Compliance Assistant",
+        "status": "running",
+    }
