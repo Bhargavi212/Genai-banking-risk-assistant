@@ -1,90 +1,197 @@
-# appp/routes/shap_explainer.py
-from fastapi import APIRouter
-from pydantic import BaseModel
-import pandas as pd
-import shap, joblib
+import logging
 from pathlib import Path
+
+import joblib
 import numpy as np
+import pandas as pd
+import shap
 
-router = APIRouter()
+from fastapi import APIRouter, HTTPException
 
-# Pydantic schema  
-class TxnFeatures(BaseModel):
-    amount: float
-    txn_type: str
-    location: str
-    device_type: str
+from Application.models.schemas import TxnFeatures
 
 
-# Load pipeline  
-BASE_DIR   = Path(__file__).resolve().parents[2]          # routes - appp - project-root
-MODEL_PATH = BASE_DIR / "model.pkl"
-print(f" Loading model from: {MODEL_PATH}")
+logger = logging.getLogger(__name__)
 
-pipeline       = joblib.load(MODEL_PATH)
-preprocessor   = pipeline.named_steps["columntransformer"]
-rf_clf         = pipeline.named_steps["randomforestclassifier"]
-
-
-# Build SHAP explainer  
-background_raw = pd.DataFrame(
-    [{
-        "amount": 10_000,
-        "txn_type": "domestic",
-        "location": "US",
-        "device_type": "web",
-    }]
+router = APIRouter(
+    prefix="/explanations",
+    tags=["Explainability"],
 )
-background_mat = preprocessor.transform(background_raw)
 
-try:
-    # SHAP ≥ 0.42 (takes masker=)
-    masker    = shap.maskers.Independent(background_mat, max_samples=100)
-    explainer = shap.TreeExplainer(
-        rf_clf,
-        data=masker,
-        feature_names=preprocessor.get_feature_names_out(),
+
+# ---------------------------------------------------------
+# Load Model Pipeline
+# ---------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MODEL_PATH = PROJECT_ROOT / "model.pkl"
+
+if not MODEL_PATH.exists():
+    raise FileNotFoundError(
+        f"Model file not found at: {MODEL_PATH}"
     )
-except TypeError:
-    # SHAP < 0.42
-    explainer = shap.TreeExplainer(rf_clf, data=background_mat)
-    explainer.feature_names = preprocessor.get_feature_names_out().tolist()
+
+pipeline = joblib.load(MODEL_PATH)
+
+preprocessor = pipeline.named_steps["columntransformer"]
+classifier = pipeline.named_steps["randomforestclassifier"]
 
 
-# API route  
-@router.post("/fraud_explain")
+# ---------------------------------------------------------
+# Initialize SHAP Explainer
+# ---------------------------------------------------------
+
+explainer = shap.TreeExplainer(classifier)
+
+feature_names = list(
+    preprocessor.get_feature_names_out()
+)
+
+
+# ---------------------------------------------------------
+# Helper Functions
+# ---------------------------------------------------------
+
+def extract_fraud_class_shap(
+    shap_values,
+    sample_index=0,
+    class_index=1,
+):
+    """
+    Extract SHAP values for the positive/fraud class while
+    supporting multiple SHAP output formats.
+    """
+
+    # Older SHAP versions may return one array per class
+    if isinstance(shap_values, list):
+        return np.asarray(
+            shap_values[class_index][sample_index]
+        )
+
+    values = np.asarray(shap_values)
+
+    # Newer SHAP:
+    # (samples, features, classes)
+    if values.ndim == 3:
+        return values[
+            sample_index,
+            :,
+            class_index,
+        ]
+
+    # Binary/single-output case:
+    # (samples, features)
+    if values.ndim == 2:
+        return values[sample_index]
+
+    raise ValueError(
+        f"Unexpected SHAP output shape: {values.shape}"
+    )
+
+
+def get_expected_value(class_index=1):
+    expected = np.asarray(
+        explainer.expected_value
+    )
+
+    if expected.ndim == 0:
+        return float(expected)
+
+    if len(expected) > class_index:
+        return float(expected[class_index])
+
+    return float(expected[0])
+
+
+# ---------------------------------------------------------
+# SHAP Explanation API
+# ---------------------------------------------------------
+
+@router.post("/fraud")
 def fraud_explain(txn: TxnFeatures):
     """
-    Return SHAP values for a single transaction.
+    Explain the model prediction for a transaction using
+    SHAP feature contributions.
     """
+
     try:
-        # ------- Encode sample -------
-        raw_df      = pd.DataFrame([txn.model_dump()])   # Pydantic v2 
-        numeric_mat = preprocessor.transform(raw_df)
+        raw_df = pd.DataFrame(
+            [txn.model_dump()]
+        )
 
-        shap_out    = explainer(numeric_mat)
+        transformed = preprocessor.transform(
+            raw_df
+        )
 
-        # ------- Pick class index (1 = fraud-prob column) -------
-        multi_output = shap_out.values.ndim == 3     # (n_samples, n_features, n_classes)
-        cls_idx      = 1 if multi_output else None
+        # Some preprocessors can produce sparse matrices.
+        if hasattr(transformed, "toarray"):
+            transformed = transformed.toarray()
 
-        # SHAP values
-        if multi_output:
-            shap_vals = shap_out.values[0][:, cls_idx]   # (n_features,)
-        else:
-            shap_vals = shap_out.values[0]               # (n_features,)
+        shap_output = explainer.shap_values(
+            transformed
+        )
 
-        # Expected value(s)
-        if shap_out.base_values.ndim == 2:               # (n_samples, n_classes)
-            expected_val = float(shap_out.base_values[0, cls_idx])
-        else:                                            # (n_samples,)
-            expected_val = float(shap_out.base_values[0])
+        fraud_shap_values = (
+            extract_fraud_class_shap(
+                shap_output,
+                class_index=1,
+            )
+        )
+
+        expected_value = get_expected_value(
+            class_index=1
+        )
+
+        prediction_probability = float(
+            classifier.predict_proba(
+                transformed
+            )[0][1]
+        )
+
+        contributions = []
+
+        for feature, value in zip(
+            feature_names,
+            fraud_shap_values,
+        ):
+            contributions.append(
+                {
+                    "feature": feature,
+                    "shap_value": round(
+                        float(value),
+                        6,
+                    ),
+                }
+            )
+
+        contributions.sort(
+            key=lambda item: abs(
+                item["shap_value"]
+            ),
+            reverse=True,
+        )
 
         return {
-            "feature_names": list(explainer.feature_names),
-            "shap_values":   shap_vals.tolist(),
-            "expected_value": expected_val,
+            "fraud_probability": round(
+                prediction_probability,
+                4,
+            ),
+            "expected_value": round(
+                expected_value,
+                6,
+            ),
+            "feature_contributions": contributions,
+            "top_contributors": contributions[:5],
         }
 
-    except Exception as e:
-        return {"error": f"SHAP explanation failed: {e}"}
+    except Exception as exc:
+        logger.exception(
+            "SHAP explanation failed"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Unable to generate model explanation."
+            ),
+        ) from exc
