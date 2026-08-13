@@ -1,26 +1,34 @@
 """
-gradio_ui.py  –  front-end for the GenAI Banking Compliance project
--------------------------------------------------------------------
-Launch as a standalone app:
+Gradio front-end for the GenAI Banking Risk & Compliance Assistant.
 
-    python gradio_ui.py           # http://127.0.0.1:7860
+Standalone:
+    python gradio_ui.py
 
-…or mount inside FastAPI:
-
-    from gradio.routes import mount_gradio_app
-    from gradio_ui import build_ui
-    app = FastAPI()
-    mount_gradio_app(app, build_ui(), path="/ui")
+Backend:
+    FastAPI must be running at http://127.0.0.1:8000
 """
+
+from pathlib import Path
 
 import gradio as gr
 import requests
 
-BACKEND_URL = "http://127.0.0.1:8000"        # FastAPI base URL
+
+BACKEND_URL = "http://127.0.0.1:8000"
 
 
-# ───────────────────────────── helper calls ──────────────────────────────
-def score_txn(user_id, amount, txn_type, location, device_type, timestamp):
+# ---------------------------------------------------------
+# Backend API Helpers
+# ---------------------------------------------------------
+
+def score_txn(
+    user_id,
+    amount,
+    txn_type,
+    location,
+    device_type,
+    timestamp,
+):
     payload = {
         "user_id": user_id,
         "amount": amount,
@@ -29,94 +37,270 @@ def score_txn(user_id, amount, txn_type, location, device_type, timestamp):
         "device_type": device_type,
         "timestamp": timestamp,
     }
+
     try:
-        res = requests.post(f"{BACKEND_URL}/txn", json=payload, timeout=20)
-        res.raise_for_status()
-        data = res.json()
-        return f"✅ **Risk Score {data['score']}**  — {data['reason']}"
-    except Exception as e:
-        return f"❌ Error: {e}"
+        response = requests.post(
+            f"{BACKEND_URL}/transactions/score",
+            json=payload,
+            timeout=20,
+        )
+
+        response.raise_for_status()
+        data = response.json()
+
+        score = data.get("risk_score")
+        risk_level = data.get("risk_reason")
+
+        if score is None:
+            return "Unable to retrieve a risk score."
+
+        return (
+            f"### Transaction Risk Result\n\n"
+            f"**Risk Probability:** {score:.2%}\n\n"
+            f"**Risk Level:** {risk_level}"
+        )
+
+    except requests.RequestException:
+        return (
+            "Unable to connect to the transaction "
+            "risk scoring service."
+        )
 
 
 def ask_compliance(question):
+    if not question or len(question.strip()) < 3:
+        return "Please enter a valid compliance question."
+
     try:
-        res = requests.post(
-            f"{BACKEND_URL}/compliance-qa", json={"question": question}, timeout=20
+        response = requests.post(
+            f"{BACKEND_URL}/compliance/qa",
+            json={"question": question},
+            timeout=30,
         )
-        res.raise_for_status()
-        return res.json()["answer"]
-    except Exception as e:
-        return f"❌ Error: {e}"
+
+        response.raise_for_status()
+        data = response.json()
+
+        answer = data.get(
+            "answer",
+            "No answer was returned.",
+        )
+
+        retrieval_status = data.get(
+            "retrieval_status",
+            "unknown",
+        )
+
+        return (
+            f"{answer}\n\n"
+            f"**Retrieval status:** {retrieval_status}"
+        )
+
+    except requests.RequestException:
+        return (
+            "Unable to connect to the compliance "
+            "question-answering service."
+        )
 
 
-def upload_pdf(file):
+def upload_pdf(file_path):
+    if not file_path:
+        return "Please select a PDF file."
+
+    path = Path(file_path)
+
+    if path.suffix.lower() != ".pdf":
+        return "Only PDF files are supported."
+
     try:
-        with open(file.name, "rb") as f:
-            files = {"file": (file.name, f, "application/pdf")}
-            res = requests.post(f"{BACKEND_URL}/upload-pdf", files=files, timeout=30)
-            res.raise_for_status()
-            return f"✅ {res.json()['message']}"
-    except Exception as e:
-        return f"❌ Upload failed: {e}"
+        with path.open("rb") as file:
+            files = {
+                "file": (
+                    path.name,
+                    file,
+                    "application/pdf",
+                )
+            }
+
+            response = requests.post(
+                f"{BACKEND_URL}/compliance/upload",
+                files=files,
+                timeout=60,
+            )
+
+        response.raise_for_status()
+        data = response.json()
+
+        return (
+            f"### Upload Successful\n\n"
+            f"**File:** {data.get('filename', path.name)}\n\n"
+            f"**Chunks indexed:** "
+            f"{data.get('chunks_added', 'N/A')}"
+        )
+
+    except requests.RequestException:
+        return (
+            "Unable to upload or index the PDF."
+        )
 
 
-# ─────────────────────────── UI construction ─────────────────────────────
+# ---------------------------------------------------------
+# UI Construction
+# ---------------------------------------------------------
+
 def build_ui():
-    with gr.Blocks(title="GenAI Banking Compliance & Risk Assistant") as ui:
-        gr.Markdown("# 🏦 GenAI Banking Compliance & Risk Assistant")
+    with gr.Blocks(
+        title="GenAI Banking Risk & Compliance Assistant"
+    ) as ui:
+
+        gr.Markdown(
+            """
+# GenAI Banking Risk & Compliance Assistant
+
+AI/ML prototype combining transaction risk prediction,
+explainable machine learning, and retrieval-augmented
+compliance question answering.
+"""
+        )
+
+        # -------------------------------------------------
+        # Transaction Risk
+        # -------------------------------------------------
 
         with gr.Tab("Transaction Risk Scoring"):
+
             with gr.Row():
-                user_id = gr.Textbox(label="User ID", value="user001")
-                timestamp = gr.Textbox(
-                    label="Timestamp (YYYY-MM-DDTHH:MM:SS)",
-                    value="2025-05-25T10:00:00",
+                user_id = gr.Textbox(
+                    label="User ID",
+                    value="user001",
                 )
-            amount = gr.Number(label="Transaction Amount", value=5000.0)
+
+                timestamp = gr.Textbox(
+                    label="Timestamp",
+                    value="2026-08-13T10:00:00",
+                    placeholder="YYYY-MM-DDTHH:MM:SS",
+                )
+
+            amount = gr.Number(
+                label="Transaction Amount",
+                value=5000.0,
+            )
+
             txn_type = gr.Dropdown(
-                ["domestic", "international"], label="Transaction Type", value="domestic"
+                choices=[
+                    "domestic",
+                    "international",
+                ],
+                label="Transaction Type",
+                value="domestic",
             )
-            location = gr.Textbox(label="Location", value="UK")
+
+            location = gr.Textbox(
+                label="Location",
+                value="US",
+            )
+
             device_type = gr.Dropdown(
-                ["web", "mobile", "atm"], label="Device Type", value="web"
+                choices=[
+                    "web",
+                    "mobile",
+                    "atm",
+                ],
+                label="Device Type",
+                value="web",
             )
-            score_btn = gr.Button("Check Risk", variant="primary")
+
+            score_btn = gr.Button(
+                "Analyze Transaction",
+                variant="primary",
+            )
+
             score_out = gr.Markdown()
 
             score_btn.click(
-                score_txn,
-                [user_id, amount, txn_type, location, device_type, timestamp],
-                score_out,
+                fn=score_txn,
+                inputs=[
+                    user_id,
+                    amount,
+                    txn_type,
+                    location,
+                    device_type,
+                    timestamp,
+                ],
+                outputs=score_out,
             )
+
+        # -------------------------------------------------
+        # Compliance Q&A
+        # -------------------------------------------------
 
         with gr.Tab("Compliance Q&A"):
+
             question = gr.Textbox(
-                lines=2,
-                placeholder="Ask a compliance-related question (e.g., AML, KYC rules)…",
+                lines=3,
+                label="Compliance Question",
+                placeholder=(
+                    "Ask a question based on the "
+                    "uploaded compliance documents."
+                ),
             )
-            ask_btn = gr.Button("Get Answer", variant="primary")
+
+            ask_btn = gr.Button(
+                "Ask Compliance Assistant",
+                variant="primary",
+            )
+
             answer = gr.Markdown()
 
-            ask_btn.click(ask_compliance, question, answer)
+            ask_btn.click(
+                fn=ask_compliance,
+                inputs=question,
+                outputs=answer,
+            )
+
+        # -------------------------------------------------
+        # PDF Upload
+        # -------------------------------------------------
 
         with gr.Tab("Upload Compliance PDF"):
+
             pdf_file = gr.File(
-                label="Upload new policy PDF",
+                label="Compliance Document",
                 file_types=[".pdf"],
                 type="filepath",
             )
-            upload_btn = gr.Button("Upload", variant="primary")
+
+            upload_btn = gr.Button(
+                "Upload and Index PDF",
+                variant="primary",
+            )
+
             upload_status = gr.Markdown()
 
-            upload_btn.click(upload_pdf, pdf_file, upload_status)
+            upload_btn.click(
+                fn=upload_pdf,
+                inputs=pdf_file,
+                outputs=upload_status,
+            )
 
         gr.Markdown(
-            "© 2025 GenAI Banking Compliance Demo &nbsp;|&nbsp; Powered by FastAPI + Gradio"
+            """
+---
+Research prototype built with FastAPI, Gradio,
+Scikit-learn, SHAP, Sentence Transformers, FAISS,
+MLflow, and retrieval-augmented generation.
+"""
         )
 
     return ui
 
 
-# ──────────────────────────── standalone run ─────────────────────────────
+# ---------------------------------------------------------
+# Standalone Run
+# ---------------------------------------------------------
+
 if __name__ == "__main__":
-    build_ui().launch(show_error=True, share=False)
+    build_ui().launch(
+        show_error=False,
+        share=False,
+    )
