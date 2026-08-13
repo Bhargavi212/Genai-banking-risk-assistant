@@ -27,7 +27,7 @@ A production-grade, zero-cost regulatory tech project built with **FastAPI**, **
 | Domain         | Tools / Frameworks                                      |
 |----------------|---------------------------------------------------------|
 | Backend        | FastAPI, Uvicorn                                        |
-| Frontend       | Streamlit                                               |
+| Frontend       | Gradio                                               |
 | ML & Explain   | Scikit-Learn, SHAP, Optuna (planned), MLflow            |
 | GenAI & RAG    | FAISS, SentenceTransformers, pdfplumber, Groq API       |
 | Observability  | Prometheus, Grafana, prometheus-fastapi-instrumentator |
@@ -60,4 +60,4 @@ A production-grade, zero-cost regulatory tech project built with **FastAPI**, **
 ## Streamlit UI
 
 ```bash
-streamlit run app_ui.py
+python gradio_ui.py
