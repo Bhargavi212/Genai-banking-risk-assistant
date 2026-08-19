@@ -320,6 +320,30 @@ Planned experiments include:
 
 The current RAG evaluation should be considered an **initial prototype benchmark**, not a comprehensive evaluation of compliance-answer reliability.
 
+## RAG Evaluation
+
+I evaluated the retrieval component using a small manually labeled set of
+15 compliance questions across three source documents.
+
+| Metric | Result |
+|---|---:|
+| Recall@1 | **0.867** |
+| Recall@3 | **1.000** |
+| Recall@5 | **1.000** |
+| Average retrieval latency | **0.0178 sec** |
+
+For 13 of the 15 questions, the expected source document was ranked first.
+For the remaining two questions, the correct source was still retrieved
+within the top three results.
+
+The errors mainly occurred on questions whose terminology overlaps across
+multiple compliance documents, which suggests that document-level retrieval
+can still be ambiguous even when relevant evidence is present.
+
+This is a small pilot evaluation rather than a comprehensive benchmark.
+The next step is to evaluate retrieval at the chunk/page level and measure
+answer groundedness and faithfulness.
+
 ---
 
 # 🧪 Reproducible Evaluation
