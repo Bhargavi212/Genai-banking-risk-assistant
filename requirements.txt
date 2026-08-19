@@ -18,3 +18,4 @@ pdfplumber
 python-multipart
 shap
 prometheus_fastapi_instrumentator
+scikit-learn==1.6.1
