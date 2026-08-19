@@ -1,107 +1,157 @@
 from pathlib import Path
 import time
 
+import numpy as np
 import pandas as pd
 
 from Application.services import rag_engine
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
 RESULTS_DIR = PROJECT_ROOT / "docs" / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+# Small manually labeled evaluation set.
+# Each question is paired with the document expected to contain the answer.
 TEST_CASES = [
     {
-        "question": "What is the purpose of customer due diligence in KYC?",
-        "expected_keyword": "customer",
+        "question": "What is the purpose of a BSA AML risk assessment?",
+        "expected_source": "BSA_AML Risk Assessment.pdf",
     },
     {
-        "question": "What factors are considered in a BSA/AML risk assessment?",
-        "expected_keyword": "risk",
+        "question": "What factors should banks consider when assessing AML risk?",
+        "expected_source": "BSA_AML Risk Assessment.pdf",
     },
     {
-        "question": "Why is transaction monitoring important for AML compliance?",
-        "expected_keyword": "transaction",
+        "question": "What is Know Your Customer and why is it important?",
+        "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
+    },
+    {
+        "question": "Why do financial institutions perform customer due diligence?",
+        "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
+    },
+    {
+        "question": "What should a banking regulatory compliance program include?",
+        "expected_source": "Banking Regulatory Compliance Checklist.pdf",
     },
 ]
 
 
-def evaluate_retrieval():
-    results = []
+def retrieve_sources(question, k):
+    question_vector = rag_engine.embed_model.encode([question])
+
+    _, indices = rag_engine.index.search(
+        np.asarray(question_vector, dtype="float32"),
+        k,
+    )
+
+    return [
+        rag_engine.sources[i]
+        for i in indices[0]
+        if 0 <= i < len(rag_engine.sources)
+    ]
+
+
+def main():
+    rows = []
 
     for case in TEST_CASES:
         start = time.perf_counter()
 
-        context = rag_engine.retrieve_context(
+        top5_sources = retrieve_sources(
             case["question"],
-            rag_engine.index,
-            rag_engine.chunks,
-            rag_engine.sources,
-            k=3,
+            k=5,
         )
 
         latency = time.perf_counter() - start
 
-        keyword_found = (
-            case["expected_keyword"].lower()
-            in context.lower()
+        expected = case["expected_source"]
+
+        recall_1 = int(
+            expected in top5_sources[:1]
         )
 
-        results.append(
+        recall_3 = int(
+            expected in top5_sources[:3]
+        )
+
+        recall_5 = int(
+            expected in top5_sources[:5]
+        )
+
+        rows.append(
             {
                 "question": case["question"],
-                "expected_keyword": case["expected_keyword"],
-                "retrieval_hit": keyword_found,
-                "latency_seconds": round(latency, 4),
+                "expected_source": expected,
+                "top_1_source": (
+                    top5_sources[0]
+                    if top5_sources
+                    else ""
+                ),
+                "recall@1": recall_1,
+                "recall@3": recall_3,
+                "recall@5": recall_5,
+                "latency_seconds": round(
+                    latency,
+                    4,
+                ),
             }
         )
 
-    return pd.DataFrame(results)
+    results = pd.DataFrame(rows)
 
+    recall_1 = results["recall@1"].mean()
+    recall_3 = results["recall@3"].mean()
+    recall_5 = results["recall@5"].mean()
 
-def main():
-    df = evaluate_retrieval()
-
-    hit_rate = df["retrieval_hit"].mean()
-    avg_latency = df["latency_seconds"].mean()
+    avg_latency = results[
+        "latency_seconds"
+    ].mean()
 
     print("\nRAG Retrieval Evaluation")
     print("------------------------")
-    print(f"Questions evaluated: {len(df)}")
-    print(f"Retrieval hit rate: {hit_rate:.4f}")
-    print(f"Average latency: {avg_latency:.4f} seconds")
 
-    csv_path = RESULTS_DIR / "rag_retrieval_results.csv"
-    df.to_csv(csv_path, index=False)
+    print(
+        f"Questions: {len(results)}"
+    )
 
-    md_path = RESULTS_DIR / "rag_evaluation.md"
+    print(
+        f"Recall@1: {recall_1:.4f}"
+    )
 
-    with md_path.open("w", encoding="utf-8") as file:
-        file.write("# RAG Retrieval Evaluation\n\n")
-        file.write(
-            "This evaluation measures whether retrieved "
-            "document context contains expected evidence "
-            "for a small set of compliance questions.\n\n"
-        )
+    print(
+        f"Recall@3: {recall_3:.4f}"
+    )
 
-        file.write(f"- Questions evaluated: {len(df)}\n")
-        file.write(
-            f"- Retrieval hit rate: {hit_rate:.4f}\n"
-        )
-        file.write(
-            f"- Average retrieval latency: "
-            f"{avg_latency:.4f} seconds\n\n"
-        )
+    print(
+        f"Recall@5: {recall_5:.4f}"
+    )
 
-        file.write(
-            "This is an initial prototype evaluation and "
-            "does not yet represent a comprehensive "
-            "groundedness or faithfulness benchmark.\n"
-        )
+    print(
+        f"Average latency: "
+        f"{avg_latency:.4f} seconds"
+    )
 
-    print(f"\nSaved results to: {RESULTS_DIR}")
+    print("\nPer-question results:")
+    print(
+        results[
+            [
+                "question",
+                "expected_source",
+                "top_1_source",
+                "recall@1",
+                "recall@3",
+                "recall@5",
+            ]
+        ].to_string(index=False)
+    )
+
+    results.to_csv(
+        RESULTS_DIR
+        / "rag_retrieval_results.csv",
+        index=False,
+    )
 
 
 if __name__ == "__main__":
