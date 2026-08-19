@@ -15,6 +15,7 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 # Small manually labeled evaluation set.
 # Each question is paired with the document expected to contain the answer.
 TEST_CASES = [
+    # BSA / AML Risk Assessment
     {
         "question": "What is the purpose of a BSA AML risk assessment?",
         "expected_source": "BSA_AML Risk Assessment.pdf",
@@ -24,6 +25,20 @@ TEST_CASES = [
         "expected_source": "BSA_AML Risk Assessment.pdf",
     },
     {
+        "question": "How does a financial institution identify its money laundering risk?",
+        "expected_source": "BSA_AML Risk Assessment.pdf",
+    },
+    {
+        "question": "Why should a bank periodically update its BSA AML risk assessment?",
+        "expected_source": "BSA_AML Risk Assessment.pdf",
+    },
+    {
+        "question": "How can products, services, customers, and geographic locations affect AML risk?",
+        "expected_source": "BSA_AML Risk Assessment.pdf",
+    },
+
+    # Know Your Customer
+    {
         "question": "What is Know Your Customer and why is it important?",
         "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
     },
@@ -32,7 +47,37 @@ TEST_CASES = [
         "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
     },
     {
+        "question": "What information can be used to verify a customer's identity?",
+        "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
+    },
+    {
+        "question": "How does KYC help financial institutions manage customer risk?",
+        "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
+    },
+    {
+        "question": "Why is ongoing customer monitoring important in a KYC program?",
+        "expected_source": "Know-Your-Customer-White-Paper-2022-compressed.pdf",
+    },
+
+    # Banking Regulatory Compliance
+    {
         "question": "What should a banking regulatory compliance program include?",
+        "expected_source": "Banking Regulatory Compliance Checklist.pdf",
+    },
+    {
+        "question": "Why are internal compliance policies important for a bank?",
+        "expected_source": "Banking Regulatory Compliance Checklist.pdf",
+    },
+    {
+        "question": "What role does employee training play in regulatory compliance?",
+        "expected_source": "Banking Regulatory Compliance Checklist.pdf",
+    },
+    {
+        "question": "Why should banks monitor changes in regulatory requirements?",
+        "expected_source": "Banking Regulatory Compliance Checklist.pdf",
+    },
+    {
+        "question": "How can compliance monitoring help identify regulatory weaknesses?",
         "expected_source": "Banking Regulatory Compliance Checklist.pdf",
     },
 ]
