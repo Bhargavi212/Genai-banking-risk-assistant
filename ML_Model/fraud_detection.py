@@ -58,7 +58,7 @@ N_ESTIMATORS = 200
 # MLflow
 # ---------------------------------------------------------
 
-mlflow.set_tracking_uri("http://localhost:5001")
+mlflow.set_tracking_uri("file:./mlruns")
 mlflow.set_experiment("fraud_risk")
 
 
