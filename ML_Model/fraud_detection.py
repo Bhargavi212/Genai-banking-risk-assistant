@@ -265,10 +265,6 @@ with mlflow.start_run() as run:
         roc_auc,
     )
 
-    mlflow.sklearn.log_model(
-        model,
-        artifact_path="model",
-    )
 
     print(
         f"\nMLflow run logged: "
