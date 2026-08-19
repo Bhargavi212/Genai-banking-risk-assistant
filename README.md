@@ -4,6 +4,8 @@
 
 # GenAI Banking Risk & Compliance Assistant
 
+![CI](https://github.com/Bhargavi212/Genai-banking-risk-assistant/actions/workflows/ci.yml/badge.svg)
+
 An end-to-end AI/ML prototype for banking risk analysis and compliance
 question answering, combining machine learning, explainable AI, and
 retrieval-augmented generation (RAG).
