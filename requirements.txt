@@ -20,3 +20,4 @@ shap
 prometheus_fastapi_instrumentator
 scikit-learn==1.6.1
 langchain-text-splitters
+matplotlib
