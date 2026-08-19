@@ -126,6 +126,18 @@ The transaction risk model is evaluated using:
 - Confusion Matrix
 - SHAP-based feature importance
 
+## 📊 Evaluation Outputs
+
+The repository includes reproducible evaluation scripts for both the
+transaction-risk model and the RAG retrieval pipeline.
+
+### Fraud Model Evaluation
+
+Run:
+
+```bash
+python evaluation/evaluate_fraud_model.py
+
 ### RAG Evaluation
 
 The compliance assistant is evaluated using:
