@@ -242,8 +242,6 @@ Question:
 
 def add_pdf_to_index(pdf_path):
     global index
-    global chunks
-    global sources
 
     pdf_path = Path(pdf_path)
 
