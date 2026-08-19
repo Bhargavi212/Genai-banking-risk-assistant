@@ -47,7 +47,7 @@ def retrieve_sources(question, k):
     )
 
     return [
-        rag_engine.sources[i]
+        rag_engine.sources[i]["filename"]
         for i in indices[0]
         if 0 <= i < len(rag_engine.sources)
     ]
