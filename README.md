@@ -407,10 +407,10 @@ Provides the initial retrieval evaluation framework.
 | Endpoint | Method | Purpose |
 |---|---|---|
 | `/` | GET | Application health/root endpoint |
-| `/txn` | POST | Transaction risk scoring |
-| `/fraud_explain` | POST | SHAP-based prediction explanation |
-| `/compliance-qa` | POST | Compliance RAG question answering |
-| `/upload-pdf` | POST | Upload and index a compliance PDF |
+| `/transactions/score` | POST | Transaction risk scoring |
+| `/explanations/fraud` | POST | SHAP-based prediction explanation |
+| `/compliance/qa` | POST | Compliance RAG question answering |
+| `/compliance/upload` | POST | Upload and index a compliance PDF |
 | `/metrics` | GET | Prometheus application metrics |
 
 ---
