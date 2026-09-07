@@ -4,6 +4,21 @@
 
 An end-to-end AI/ML research prototype combining **machine learning, explainable AI, and Retrieval-Augmented Generation (RAG)** for banking transaction risk analysis and compliance question answering.
 
+## 📊 Evaluation Highlights
+
+![Model & RAG Evaluation Dashboard](docs/results/linkedin_evaluation_dashboard.png)
+
+**Evaluation snapshot**
+
+- Best ROC-AUC: **0.723**
+- Best F1 Score: **0.618**
+- Best Recall: **0.695**
+- RAG citation behavior accuracy: **100%**
+- RAG refusal behavior accuracy: **100%**
+- Average RAG generation latency: **1.11 seconds**
+- API errors during RAG evaluation: **0**
+
+
 The project explores two related problems:
 
 1. **Transaction Risk Analysis** — identifying potentially fraudulent transactions using supervised machine learning.
@@ -93,7 +108,7 @@ Context-grounded answer
 FastAPI exposes a transaction-risk endpoint:
 
 ```text
-POST /txn
+POST /transactions/score
 ```
 
 The model processes:
@@ -120,7 +135,7 @@ SHAP values provide feature-level attribution for individual transaction predict
 The RAG endpoint:
 
 ```text
-POST /compliance-qa
+POST /compliance/qa
 ```
 
 retrieves relevant information from indexed compliance documents before sending the retrieved context to the language model.
@@ -130,7 +145,7 @@ retrieves relevant information from indexed compliance documents before sending 
 New compliance documents can be uploaded through:
 
 ```text
-POST /upload-pdf
+POST /compliance/upload
 ```
 
 Uploaded PDFs are:
