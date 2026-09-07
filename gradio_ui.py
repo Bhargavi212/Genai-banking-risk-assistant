@@ -63,9 +63,13 @@ def score_txn(
     except requests.RequestException as exc:
         return (
             "Unable to connect to the transaction "
-            f"risk scoring service.\n\nError: {exc}"
+            f"risk scoring service.\n\n**Error:** {exc}"
         )
 
+
+# ---------------------------------------------------------
+# Compliance Q&A
+# ---------------------------------------------------------
 
 def ask_compliance(question):
     if not question or len(question.strip()) < 3:
@@ -100,9 +104,13 @@ def ask_compliance(question):
     except requests.RequestException as exc:
         return (
             "Unable to connect to the compliance "
-            f"question-answering service.\n\nError: {exc}"
+            f"question-answering service.\n\n**Error:** {exc}"
         )
 
+
+# ---------------------------------------------------------
+# PDF Upload
+# ---------------------------------------------------------
 
 def upload_pdf(file_path):
     if not file_path:
@@ -142,7 +150,7 @@ def upload_pdf(file_path):
     except requests.RequestException as exc:
         return (
             "Unable to upload or index the PDF."
-            f"\n\nError: {exc}"
+            f"\n\n**Error:** {exc}"
         )
 
 
@@ -159,20 +167,17 @@ def build_ui():
             """
 # 🏦 GenAI Banking Risk & Compliance Assistant
 
-### End-to-End AI Engineering Prototype
+### AI-powered Banking Risk Detection & Compliance Intelligence
 
-Combining **Machine Learning**, **Explainable AI**, and
-**Retrieval-Augmented Generation** for financial risk and
-compliance workflows.
+An end-to-end AI engineering prototype combining
+**Machine Learning**, **Explainable AI**, and
+**Retrieval-Augmented Generation (RAG)**.
 
----
-
-**Core capabilities**
-
-- Transaction risk prediction
-- Explainable AI
-- Banking compliance Q&A
-- PDF ingestion and vector retrieval
+**Capabilities**
+- 🔍 Transaction Risk Prediction
+- 🧠 Explainable Machine Learning
+- 📚 RAG-powered Compliance Q&A
+- 📄 Compliance Document Ingestion
 """
         )
 
@@ -184,22 +189,23 @@ compliance workflows.
 
             gr.Markdown(
                 """
-### Analyze a Banking Transaction
+### Analyze Transaction Risk
 
-Enter transaction details below to generate a machine-learning
-risk score.
+Enter transaction information to generate an ML-powered
+risk probability.
 """
             )
 
             with gr.Row():
+
                 user_id = gr.Textbox(
                     label="User ID",
-                    value="user001",
+                    value="user777",
                 )
 
                 timestamp = gr.Textbox(
                     label="Timestamp",
-                    value="2026-08-13T10:00:00",
+                    value="2026-09-07T13:20:00",
                     placeholder="YYYY-MM-DDTHH:MM:SS",
                 )
 
@@ -207,7 +213,7 @@ risk score.
 
                 amount = gr.Number(
                     label="Transaction Amount ($)",
-                    value=5000.0,
+                    value=25000.0,
                 )
 
                 txn_type = gr.Dropdown(
@@ -216,14 +222,14 @@ risk score.
                         "international",
                     ],
                     label="Transaction Type",
-                    value="domestic",
+                    value="international",
                 )
 
             with gr.Row():
 
                 location = gr.Textbox(
                     label="Location",
-                    value="US",
+                    value="Germany",
                 )
 
                 device_type = gr.Dropdown(
@@ -233,7 +239,7 @@ risk score.
                         "atm",
                     ],
                     label="Device Type",
-                    value="web",
+                    value="atm",
                 )
 
             score_btn = gr.Button(
@@ -264,19 +270,23 @@ risk score.
 
             gr.Markdown(
                 """
-### RAG-Powered Banking Compliance Assistant
+### RAG-Powered Compliance Assistant
 
-Ask questions based on the compliance documents indexed by
-the backend.
+Ask questions based on the banking compliance documents
+available to the retrieval system.
 """
             )
 
             question = gr.Textbox(
                 lines=4,
                 label="Compliance Question",
+                value=(
+                    "What are the key components of "
+                    "a BSA/AML risk assessment?"
+                ),
                 placeholder=(
-                    "Example: What are the key components "
-                    "of a BSA/AML risk assessment?"
+                    "Ask a question based on the "
+                    "compliance documents."
                 ),
             )
 
@@ -301,10 +311,10 @@ the backend.
 
             gr.Markdown(
                 """
-### Add a New Compliance Document
+### Compliance Document Ingestion
 
-Upload a PDF to add its contents to the compliance
-retrieval pipeline.
+Upload a PDF compliance document for indexing and
+retrieval.
 """
             )
 
@@ -327,13 +337,17 @@ retrieval pipeline.
                 outputs=upload_status,
             )
 
+        # -------------------------------------------------
+        # Footer
+        # -------------------------------------------------
+
         gr.Markdown(
             """
 ---
 
-### Technology Stack
+### ⚙️ Technology Stack
 
-**ML:** Scikit-learn • SHAP  
+**Machine Learning:** Scikit-learn • SHAP  
 **GenAI / RAG:** Sentence Transformers • FAISS • LLM  
 **Backend:** FastAPI  
 **Frontend:** Gradio  

@@ -1,0 +1,32 @@
+question,expected_source,expect_refusal,answer,generation_latency_seconds,error,has_citation,expected_source_present,valid_page_citation,refused,refusal_correct,citation_behavior_correct
+What is Know Your Customer and why is it important?,Know-Your-Customer-White-Paper-2022-compressed.pdf,False,"Know Your Customer (KYC) refers to the set of rules that financial institutions must follow to verify the identity of their customers and understand who they are. [Source: Know-Your-Customer-White-Paper-2022-compressed.pdf | Page: 13]  
+
+KYC is important because it underpins a financial institution’s reputation and customer trust, and it enables the institution to act in accordance with regulatory compliance. [Source: Know-Your-Customer-White-Paper-2022-compressed.pdf | Page: 2]",1.5413,,True,True,True,False,True,True
+Why do financial institutions perform customer due diligence?,Know-Your-Customer-White-Paper-2022-compressed.pdf,False,"Financial institutions conduct customer due diligence to meet regulatory obligations, assess and mitigate financial‑crime risks, and protect their reputation and customer trust. The FCA notes that client due diligence is a core part of risk assessment and compliance, and deficiencies in this area can lead to mistakes in risk ratings and increased exposure to financial crime. [Source: Know-Your-Customer-White-Paper-2022-compressed.pdf | Page: 2] [Source: Know-Your-Customer-White-Paper-2022-compressed.pdf | Page: 5]",0.8083,,True,True,True,False,True,True
+What was the bank's cryptocurrency trading revenue in 2025?,,True,The retrieved documents do not provide enough information to answer this question.,0.6271,,False,True,False,True,True,True
+What should a banking regulatory compliance program include?,Banking Regulatory Compliance Checklist.pdf,False,"A banking regulatory compliance program should include:
+
+- **Licensing, reporting, and training requirements** to cover the broad regulatory landscape of banking operations.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 1]
+
+- **Capital adequacy and reserve management** to ensure sufficient cash on‑hand and in reserves.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 2]
+
+- **Adequate deposit insurance** to protect customer deposits.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 2]
+
+- **Financial reporting and disclosure** obligations to maintain transparency and regulatory oversight.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 2]
+
+- **Transaction monitoring and case management** systems to detect and address suspicious activity.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 4]
+
+- **Fraud and money‑laundering prevention** measures as part of the compliance infrastructure.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 4]
+
+- **Community reinvestment** initiatives to meet regulatory expectations around community development.  
+  [Source: Banking Regulatory Compliance Checklist.pdf | Page: 4]",1.5785,,True,True,True,False,True,True
+How can compliance monitoring help identify regulatory weaknesses?,Banking Regulatory Compliance Checklist.pdf,False,"Compliance monitoring—such as transaction monitoring, case management, and regular internal audits—lets banks spot gaps in their controls and detect suspicious activity. By reviewing these activities, institutions can identify weaknesses in their regulatory programs (e.g., ineffective sanctions screening or inadequate internal controls) and take corrective action.  
+
+[Source: Banking Regulatory Compliance Checklist.pdf | Page: 3]  
+[Source: Banking Regulatory Compliance Checklist.pdf | Page: 4]",0.9709,,True,True,True,False,True,True

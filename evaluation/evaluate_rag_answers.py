@@ -24,7 +24,7 @@ TEST_CASES = [
         "expect_refusal": False,
     },
     {
-        "question": "What information can be used to verify a customer's identity?",
+        "question": "What was the bank's cryptocurrency trading revenue in 2025?",
         "expected_source": None,
         "expect_refusal": True,
     },
