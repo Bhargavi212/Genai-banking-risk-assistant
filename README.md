@@ -4,7 +4,7 @@
 
 An end-to-end AI/ML research prototype combining **machine learning, explainable AI, and Retrieval-Augmented Generation (RAG)** for banking transaction risk analysis and compliance question answering.
 
-## 📊 Evaluation Highlights
+## Evaluation Highlights
 
 ![Model & RAG Evaluation Dashboard](docs/results/linkedin_evaluation_dashboard.png)
 
@@ -24,7 +24,7 @@ An end-to-end AI/ML research prototype combining **machine learning, explainable
 
 ---
 
-## 🖥️ Application Demo
+## Application Demo
 
 ### Transaction Risk Scoring
 
@@ -40,7 +40,7 @@ The compliance assistant retrieves relevant evidence from indexed banking docume
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 The project explores two related banking AI problems:
 
@@ -51,7 +51,7 @@ The goal is to demonstrate how traditional machine learning, explainable AI, sem
 
 ---
 
-## 🔬 Research Questions
+## Research Questions
 
 This project investigates:
 
@@ -68,7 +68,7 @@ This project investigates:
 
 ---
 
-# 🏗️ System Architecture
+# System Architecture
 
 ![GenAI Banking Risk & Compliance Assistant Architecture](docs/system-architecture.png)
 
@@ -120,7 +120,7 @@ Page-level source citations
 
 ---
 
-# ✨ Key Features
+# Key Features
 
 ## Transaction Risk Scoring
 
@@ -198,7 +198,7 @@ Uploaded PDFs are:
 
 ---
 
-# 🧰 Tech Stack
+# Tech Stack
 
 | Component | Technology |
 |---|---|
@@ -222,7 +222,7 @@ Uploaded PDFs are:
 
 ---
 
-# 📊 Machine Learning Experiments
+# Machine Learning Experiments
 
 ## Dataset
 
@@ -265,7 +265,7 @@ It also illustrates why accuracy alone can be misleading in fraud-detection prob
 
 ---
 
-# 🎚️ Classification Threshold Analysis
+# Classification Threshold Analysis
 
 The Logistic Regression model was evaluated across multiple classification thresholds.
 
@@ -302,7 +302,7 @@ A production system would require threshold selection using independent validati
 
 ---
 
-# 🔍 Explainability
+# Explainability
 
 SHAP is used to examine how individual transaction features influence model predictions.
 
@@ -318,7 +318,7 @@ Explainability is particularly important for financial AI systems where model de
 
 ---
 
-# 📚 Retrieval-Augmented Generation
+# Retrieval-Augmented Generation
 
 The compliance assistant uses **Retrieval-Augmented Generation (RAG)** to ground LLM responses in indexed compliance documents.
 
@@ -359,7 +359,7 @@ This architecture is designed to reduce unsupported generation and improve answe
 
 ---
 
-# 🧪 RAG Evaluation
+# RAG Evaluation
 
 ## Retrieval Evaluation
 
@@ -408,7 +408,7 @@ The assistant correctly responds that the retrieved documents do not contain eno
 
 ---
 
-# 🔁 Reproducible Evaluation
+# Reproducible Evaluation
 
 Evaluation scripts are available under:
 
@@ -480,7 +480,7 @@ Evaluates generated answers for citation and refusal behavior.
 
 ---
 
-# 📈 Evaluation Artifacts
+# Evaluation Artifacts
 
 Generated experiment outputs are stored under:
 
@@ -502,7 +502,7 @@ threshold_analysis.csv
 
 ---
 
-# 🔌 API Endpoints
+# API Endpoints
 
 | Endpoint | Method | Purpose |
 |---|---|---|
@@ -515,7 +515,7 @@ threshold_analysis.csv
 
 ---
 
-# 🖥️ Gradio Interface
+# Gradio Interface
 
 The project includes a Gradio interface for interacting with the backend.
 
@@ -539,7 +539,7 @@ The interface provides:
 
 ---
 
-# 🧪 Testing & Continuous Integration
+# Testing & Continuous Integration
 
 The project uses **Pytest** for automated testing and **GitHub Actions** for continuous integration.
 
@@ -575,7 +575,7 @@ This makes the experiment-tracking configuration portable across local and noteb
 
 ---
 
-# 📡 Monitoring
+# Monitoring
 
 FastAPI application metrics are instrumented using:
 
@@ -587,7 +587,7 @@ The project also contains Prometheus and Grafana components for observability ex
 
 ---
 
-# 🐳 Containerization
+# Containerization
 
 The project includes Docker and Docker Compose components for local containerized execution.
 
@@ -600,7 +600,7 @@ This provides a foundation for:
 
 ---
 
-# ⚠️ Limitations
+# Limitations
 
 This repository is an **AI/ML research and engineering prototype**.
 
@@ -616,7 +616,7 @@ Important limitations include:
 
 ---
 
-# 🚀 Future Research
+# Future Research
 
 Future work includes:
 
@@ -637,7 +637,7 @@ Future work includes:
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text
 Genai-banking-risk-assistant/
@@ -681,7 +681,7 @@ Genai-banking-risk-assistant/
 
 ---
 
-# 🎓 Research Perspective
+# Research Perspective
 
 This project is designed not only as an application prototype but also as an experimental environment for studying the intersection of:
 
