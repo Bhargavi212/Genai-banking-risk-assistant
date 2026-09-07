@@ -17,6 +17,19 @@ An end-to-end AI/ML research prototype combining **machine learning, explainable
 - RAG refusal behavior accuracy: **100%**
 - Average RAG generation latency: **1.11 seconds**
 - API errors during RAG evaluation: **0**
+## 🖥️ Application Demo
+
+### Transaction Risk Scoring
+
+The transaction-risk interface evaluates transaction attributes and returns a model-generated risk probability and classification.
+
+![Transaction Risk Scoring Demo](docs/transaction-risk-demo.png)
+
+### RAG-Powered Compliance Assistant
+
+The compliance assistant retrieves relevant evidence from indexed banking documents and generates grounded responses with page-level source citations.
+
+![Compliance RAG Demo](docs/compliance-rag-demo.png)
 
 
 The project explores two related problems:
