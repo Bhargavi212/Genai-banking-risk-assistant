@@ -561,7 +561,7 @@ The CI badge at the top of the README reflects the current workflow status.
 
 ---
 
-# 📊 Experiment Tracking
+# Experiment Tracking
 
 ML experiments are tracked using **MLflow**.
 
