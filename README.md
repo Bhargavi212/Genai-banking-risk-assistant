@@ -68,6 +68,13 @@ This project investigates:
 
 ## 🏗️ System Architecture
 
+![GenAI Banking Risk & Compliance Assistant Architecture](docs/system-architecture.png)
+
+The architecture combines two AI workflows:
+
+- **Transaction Risk Pipeline:** transaction data → preprocessing → ML risk scoring → SHAP explainability.
+- **Compliance RAG Pipeline:** compliance PDFs → chunking → Sentence Transformer embeddings → FAISS retrieval → Groq-hosted LLM → grounded answers with source citations.
+
 The system contains two primary AI pipelines.
 
 ### Transaction Risk Pipeline
