@@ -60,10 +60,10 @@ def score_txn(
             f"**Risk Level:** {risk_level}"
         )
 
-    except requests.RequestException:
+    except requests.RequestException as exc:
         return (
             "Unable to connect to the transaction "
-            "risk scoring service."
+            f"risk scoring service.\n\nError: {exc}"
         )
 
 
@@ -92,14 +92,15 @@ def ask_compliance(question):
         )
 
         return (
+            f"### Compliance Answer\n\n"
             f"{answer}\n\n"
             f"**Retrieval status:** {retrieval_status}"
         )
 
-    except requests.RequestException:
+    except requests.RequestException as exc:
         return (
             "Unable to connect to the compliance "
-            "question-answering service."
+            f"question-answering service.\n\nError: {exc}"
         )
 
 
@@ -138,9 +139,10 @@ def upload_pdf(file_path):
             f"{data.get('chunks_added', 'N/A')}"
         )
 
-    except requests.RequestException:
+    except requests.RequestException as exc:
         return (
             "Unable to upload or index the PDF."
+            f"\n\nError: {exc}"
         )
 
 
@@ -155,11 +157,22 @@ def build_ui():
 
         gr.Markdown(
             """
-# GenAI Banking Risk & Compliance Assistant
+# 🏦 GenAI Banking Risk & Compliance Assistant
 
-AI/ML prototype combining transaction risk prediction,
-explainable machine learning, and retrieval-augmented
-compliance question answering.
+### End-to-End AI Engineering Prototype
+
+Combining **Machine Learning**, **Explainable AI**, and
+**Retrieval-Augmented Generation** for financial risk and
+compliance workflows.
+
+---
+
+**Core capabilities**
+
+- Transaction risk prediction
+- Explainable AI
+- Banking compliance Q&A
+- PDF ingestion and vector retrieval
 """
         )
 
@@ -167,7 +180,16 @@ compliance question answering.
         # Transaction Risk
         # -------------------------------------------------
 
-        with gr.Tab("Transaction Risk Scoring"):
+        with gr.Tab("🔍 Transaction Risk Scoring"):
+
+            gr.Markdown(
+                """
+### Analyze a Banking Transaction
+
+Enter transaction details below to generate a machine-learning
+risk score.
+"""
+            )
 
             with gr.Row():
                 user_id = gr.Textbox(
@@ -181,34 +203,38 @@ compliance question answering.
                     placeholder="YYYY-MM-DDTHH:MM:SS",
                 )
 
-            amount = gr.Number(
-                label="Transaction Amount",
-                value=5000.0,
-            )
+            with gr.Row():
 
-            txn_type = gr.Dropdown(
-                choices=[
-                    "domestic",
-                    "international",
-                ],
-                label="Transaction Type",
-                value="domestic",
-            )
+                amount = gr.Number(
+                    label="Transaction Amount ($)",
+                    value=5000.0,
+                )
 
-            location = gr.Textbox(
-                label="Location",
-                value="US",
-            )
+                txn_type = gr.Dropdown(
+                    choices=[
+                        "domestic",
+                        "international",
+                    ],
+                    label="Transaction Type",
+                    value="domestic",
+                )
 
-            device_type = gr.Dropdown(
-                choices=[
-                    "web",
-                    "mobile",
-                    "atm",
-                ],
-                label="Device Type",
-                value="web",
-            )
+            with gr.Row():
+
+                location = gr.Textbox(
+                    label="Location",
+                    value="US",
+                )
+
+                device_type = gr.Dropdown(
+                    choices=[
+                        "web",
+                        "mobile",
+                        "atm",
+                    ],
+                    label="Device Type",
+                    value="web",
+                )
 
             score_btn = gr.Button(
                 "Analyze Transaction",
@@ -234,14 +260,23 @@ compliance question answering.
         # Compliance Q&A
         # -------------------------------------------------
 
-        with gr.Tab("Compliance Q&A"):
+        with gr.Tab("📚 Compliance Q&A"):
+
+            gr.Markdown(
+                """
+### RAG-Powered Banking Compliance Assistant
+
+Ask questions based on the compliance documents indexed by
+the backend.
+"""
+            )
 
             question = gr.Textbox(
-                lines=3,
+                lines=4,
                 label="Compliance Question",
                 placeholder=(
-                    "Ask a question based on the "
-                    "uploaded compliance documents."
+                    "Example: What are the key components "
+                    "of a BSA/AML risk assessment?"
                 ),
             )
 
@@ -262,7 +297,16 @@ compliance question answering.
         # PDF Upload
         # -------------------------------------------------
 
-        with gr.Tab("Upload Compliance PDF"):
+        with gr.Tab("📄 Upload Compliance PDF"):
+
+            gr.Markdown(
+                """
+### Add a New Compliance Document
+
+Upload a PDF to add its contents to the compliance
+retrieval pipeline.
+"""
+            )
 
             pdf_file = gr.File(
                 label="Compliance Document",
@@ -286,9 +330,16 @@ compliance question answering.
         gr.Markdown(
             """
 ---
-Research prototype built with FastAPI, Gradio,
-Scikit-learn, SHAP, Sentence Transformers, FAISS,
-MLflow, and retrieval-augmented generation.
+
+### Technology Stack
+
+**ML:** Scikit-learn • SHAP  
+**GenAI / RAG:** Sentence Transformers • FAISS • LLM  
+**Backend:** FastAPI  
+**Frontend:** Gradio  
+**MLOps:** MLflow • Docker • Prometheus • Grafana • GitHub Actions
+
+*Research and engineering prototype using synthetic transaction data.*
 """
         )
 
@@ -301,6 +352,6 @@ MLflow, and retrieval-augmented generation.
 
 if __name__ == "__main__":
     build_ui().launch(
-        show_error=False,
-        share=False,
+        show_error=True,
+        share=True,
     )
