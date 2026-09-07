@@ -4,20 +4,27 @@
 
 An end-to-end AI/ML research prototype combining **machine learning, explainable AI, and Retrieval-Augmented Generation (RAG)** for banking transaction risk analysis and compliance question answering.
 
-## Evaluation Highlights
+## 📊 Evaluation Highlights
 
 ![Model & RAG Evaluation Dashboard](docs/results/linkedin_evaluation_dashboard.png)
 
-**Evaluation snapshot**
+### Evaluation Snapshot
 
-- Best ROC-AUC: **0.723**
-- Best F1 Score: **0.618**
-- Best Recall: **0.695**
-- RAG citation behavior accuracy: **100%**
-- RAG refusal behavior accuracy: **100%**
-- Average RAG generation latency: **1.11 seconds**
-- API errors during RAG evaluation: **0**
-##  Application Demo
+| Metric | Result |
+|---|---:|
+| Best ROC-AUC | **0.723** |
+| Best F1 Score | **0.618** |
+| Best Recall | **0.695** |
+| RAG Citation Behavior Accuracy | **100%** |
+| RAG Refusal Behavior Accuracy | **100%** |
+| Average RAG Generation Latency | **1.11 sec** |
+| RAG Evaluation API Errors | **0** |
+
+> **Research prototype:** The transaction dataset used in the current experiments is synthetically generated. Results should not be interpreted as production banking performance.
+
+---
+
+## 🖥️ Application Demo
 
 ### Transaction Risk Scoring
 
@@ -31,27 +38,20 @@ The compliance assistant retrieves relevant evidence from indexed banking docume
 
 ![Compliance RAG Demo](docs/compliance-rag-demo.png)
 
+---
 
-The project explores two related problems:
+## 🎯 Project Overview
+
+The project explores two related banking AI problems:
 
 1. **Transaction Risk Analysis** — identifying potentially fraudulent transactions using supervised machine learning.
 2. **Compliance Question Answering** — retrieving relevant evidence from banking compliance documents and generating context-grounded answers using an LLM.
 
-> **Research prototype:** The transaction dataset used in the current experiments is synthetically generated. Results should not be interpreted as production banking performance.
+The goal is to demonstrate how traditional machine learning, explainable AI, semantic retrieval, and generative AI can be integrated into a single research-oriented banking intelligence system.
 
 ---
 
-##  Motivation
-
-Financial institutions must identify suspicious transactions while allowing analysts to efficiently navigate complex regulatory and compliance information.
-
-Traditional machine learning can help identify patterns associated with transaction risk, while Generative AI and RAG can help analysts retrieve relevant information from regulatory documents.
-
-This project investigates how these approaches can be combined into a single explainable AI system.
-
----
-
-##  Research Questions
+## 🔬 Research Questions
 
 This project investigates:
 
@@ -62,22 +62,19 @@ This project investigates:
 - Which transaction features contribute to model predictions?
 - Can SHAP improve interpretability of transaction-risk predictions?
 - Can RAG generate compliance answers grounded in retrieved policy documents?
+- How accurately can the RAG system cite its retrieved evidence?
+- Can the assistant appropriately refuse questions unsupported by the indexed documents?
 - How can retrieval quality, source correctness, groundedness, and faithfulness be evaluated?
 
 ---
 
-##  System Architecture
+# 🏗️ System Architecture
 
 ![GenAI Banking Risk & Compliance Assistant Architecture](docs/system-architecture.png)
 
-The architecture combines two AI workflows:
+The architecture combines two primary AI workflows.
 
-- **Transaction Risk Pipeline:** transaction data → preprocessing → ML risk scoring → SHAP explainability.
-- **Compliance RAG Pipeline:** compliance PDFs → chunking → Sentence Transformer embeddings → FAISS retrieval → Groq-hosted LLM → grounded answers with source citations.
-
-The system contains two primary AI pipelines.
-
-### Transaction Risk Pipeline
+## Transaction Risk Pipeline
 
 ```text
 Transaction
@@ -90,19 +87,19 @@ Fraud probability
     ↓
 Decision threshold
     ↓
-Risk prediction
+Risk classification
     ↓
 SHAP explanation
 ```
 
-### Compliance RAG Pipeline
+## Compliance RAG Pipeline
 
 ```text
 Compliance PDFs
       ↓
 PDF text extraction
       ↓
-Text chunking
+Recursive text chunking
       ↓
 SentenceTransformer embeddings
       ↓
@@ -116,51 +113,74 @@ Relevant document context
       ↓
 Groq-hosted LLM
       ↓
-Context-grounded answer
+Grounded answer
+      ↓
+Page-level source citations
 ```
 
 ---
 
-##  Key Features
+# ✨ Key Features
 
-### Transaction Risk Scoring
+## Transaction Risk Scoring
 
-FastAPI exposes a transaction-risk endpoint:
+FastAPI exposes the transaction-risk endpoint:
 
 ```text
 POST /transactions/score
 ```
 
-The model processes:
+The model processes transaction attributes including:
 
 - Transaction amount
 - Transaction type
 - Location
 - Device type
+- Timestamp
 
-and returns a fraud-risk score and risk classification.
+and returns a fraud-risk probability and risk classification.
 
-### Explainable AI
+---
 
-The project includes a SHAP-based explanation endpoint:
+## Explainable AI
+
+The project includes SHAP-based prediction explainability.
+
+SHAP values provide feature-level attribution to help investigate:
+
+- Why a transaction received a particular risk score
+- Which features contributed most strongly
+- Whether transaction amount influenced the prediction
+- Whether transaction type, location, or device type increased predicted risk
+
+The current API exposes:
 
 ```text
-POST /fraud_explain
+POST /explanations/fraud
 ```
 
-SHAP values provide feature-level attribution for individual transaction predictions.
+---
 
-### Compliance Question Answering
+## Compliance Question Answering
 
-The RAG endpoint:
+The compliance RAG endpoint is:
 
 ```text
 POST /compliance/qa
 ```
 
-retrieves relevant information from indexed compliance documents before sending the retrieved context to the language model.
+The system:
 
-### Dynamic PDF Indexing
+1. Embeds the user question
+2. Searches the FAISS vector index
+3. Retrieves semantically relevant compliance-document chunks
+4. Supplies retrieved evidence to the LLM
+5. Generates an answer constrained by the retrieved context
+6. Returns page-level source citations
+
+---
+
+## Dynamic PDF Indexing
 
 New compliance documents can be uploaded through:
 
@@ -170,14 +190,15 @@ POST /compliance/upload
 
 Uploaded PDFs are:
 
-1. Parsed with `pdfplumber`
-2. Split into text chunks
+1. Parsed using `pdfplumber`
+2. Split into overlapping text chunks
 3. Embedded using Sentence Transformers
-4. Added to the FAISS index
+4. Added to the FAISS vector index
+5. Made available for subsequent compliance retrieval
 
 ---
 
-##  Tech Stack
+# 🧰 Tech Stack
 
 | Component | Technology |
 |---|---|
@@ -188,8 +209,10 @@ Uploaded PDFs are:
 | Model Comparison | Logistic Regression, Random Forest, Gradient Boosting, XGBoost |
 | Explainability | SHAP |
 | Embeddings | Sentence Transformers |
+| Embedding Model | `all-MiniLM-L6-v2` |
 | Vector Search | FAISS |
 | Document Processing | pdfplumber |
+| Text Splitting | LangChain RecursiveCharacterTextSplitter |
 | Generative AI | Groq-hosted LLM |
 | Experiment Tracking | MLflow |
 | Monitoring | Prometheus, Grafana |
@@ -199,7 +222,7 @@ Uploaded PDFs are:
 
 ---
 
-#  Machine Learning Experiments
+# 📊 Machine Learning Experiments
 
 ## Dataset
 
@@ -238,13 +261,13 @@ Although XGBoost achieved slightly higher overall accuracy and precision, Logist
 
 This experiment demonstrates that **increased model complexity does not automatically produce better performance**.
 
-It also illustrates why accuracy alone can be misleading for fraud-detection problems.
+It also illustrates why accuracy alone can be misleading in fraud-detection problems.
 
 ---
 
-##  Classification Threshold Analysis
+# 🎚️ Classification Threshold Analysis
 
-The Logistic Regression model was further evaluated across different classification thresholds.
+The Logistic Regression model was evaluated across multiple classification thresholds.
 
 | Threshold | Precision | Recall | F1-score |
 |---:|---:|---:|---:|
@@ -261,21 +284,25 @@ Among the tested thresholds, **0.40 achieved the highest F1-score of 0.624**.
 
 Lowering the threshold from the default `0.50` to `0.40` increased fraud recall from:
 
-**69.5% → 83.1%**
+```text
+69.5% → 83.1%
+```
 
 while precision decreased from:
 
-**55.7% → 50.0%**
+```text
+55.7% → 50.0%
+```
 
 This demonstrates the practical **precision-recall trade-off** involved in fraud screening.
 
-A lower threshold detects more potentially fraudulent transactions but also produces more false-positive alerts.
+A lower threshold identifies more potentially fraudulent transactions but also produces more false-positive alerts.
 
-A production system would require threshold selection based on independent validation data and the operational costs of false positives and false negatives.
+A production system would require threshold selection using independent validation data and business-specific costs associated with false positives and false negatives.
 
 ---
 
-##  Explainability
+# 🔍 Explainability
 
 SHAP is used to examine how individual transaction features influence model predictions.
 
@@ -284,19 +311,18 @@ The explainability component is designed to help answer questions such as:
 - Why was this transaction considered risky?
 - Which features contributed most strongly to the prediction?
 - Did transaction amount significantly affect the score?
-- Did transaction type, location, or device type increase predicted risk?
+- Did transaction type influence the result?
+- Did location or device type increase predicted risk?
 
-This is particularly important for financial AI systems where model decisions may require investigation and human review.
+Explainability is particularly important for financial AI systems where model decisions may require investigation and human review.
 
 ---
 
-#  Retrieval-Augmented Generation
+# 📚 Retrieval-Augmented Generation
 
-The compliance assistant uses Retrieval-Augmented Generation to ground LLM responses in uploaded compliance documents.
+The compliance assistant uses **Retrieval-Augmented Generation (RAG)** to ground LLM responses in indexed compliance documents.
 
 ## Document Processing
-
-Compliance PDFs are processed using:
 
 ```text
 PDF
@@ -310,7 +336,7 @@ SentenceTransformer embeddings
 FAISS vector index
 ```
 
-The embedding model used by the current implementation is:
+The current embedding model is:
 
 ```text
 all-MiniLM-L6-v2
@@ -326,62 +352,63 @@ For each compliance question:
 2. FAISS searches for semantically similar document chunks.
 3. The most relevant chunks are retrieved.
 4. Retrieved evidence is supplied to the LLM.
-5. The LLM is instructed to answer using the supplied context.
+5. The LLM is instructed to answer only using the supplied context.
+6. Source filenames and page numbers are included in the response.
 
-This architecture is intended to reduce unsupported generation and improve answer grounding.
+This architecture is designed to reduce unsupported generation and improve answer grounding.
 
 ---
 
-##  RAG Evaluation
+# 🧪 RAG Evaluation
 
-The repository contains an initial RAG evaluation framework.
+## Retrieval Evaluation
 
-Current evaluation work considers:
-
-- Retrieval hit rate
-- Retrieval latency
-- Evidence retrieval
-
-Planned experiments include:
-
-- Recall@1
-- Recall@3
-- Recall@5
-- Source correctness
-- Answer relevance
-- Groundedness
-- Faithfulness
-- RAG vs. no-RAG comparison
-
-The current RAG evaluation should be considered an **initial prototype benchmark**, not a comprehensive evaluation of compliance-answer reliability.
-
-## RAG Evaluation
-
-I evaluated the retrieval component using a small manually labeled set of
-15 compliance questions across three source documents.
+The retrieval component was evaluated using a small manually labeled set of **15 compliance questions across three source documents**.
 
 | Metric | Result |
 |---|---:|
 | Recall@1 | **0.867** |
 | Recall@3 | **1.000** |
 | Recall@5 | **1.000** |
-| Average retrieval latency | **0.0178 sec** |
+| Average Retrieval Latency | **0.0178 sec** |
 
-For 13 of the 15 questions, the expected source document was ranked first.
-For the remaining two questions, the correct source was still retrieved
-within the top three results.
+For **13 of the 15 questions**, the expected source document was ranked first.
 
-The errors mainly occurred on questions whose terminology overlaps across
-multiple compliance documents, which suggests that document-level retrieval
-can still be ambiguous even when relevant evidence is present.
+For the remaining two questions, the expected source was still retrieved within the top three results.
 
-This is a small pilot evaluation rather than a comprehensive benchmark.
-The next step is to evaluate retrieval at the chunk/page level and measure
-answer groundedness and faithfulness.
+The errors primarily occurred for questions whose terminology overlapped across multiple compliance documents, demonstrating that document-level retrieval can remain ambiguous even when relevant evidence is available.
 
 ---
 
-#  Reproducible Evaluation
+## Generated Answer Evaluation
+
+The generated-answer evaluation tests:
+
+- Citation behavior
+- Expected source presence
+- Valid page citations
+- Appropriate refusal behavior
+- Generation latency
+- API errors
+
+Current evaluation results:
+
+| Metric | Result |
+|---|---:|
+| Citation Behavior Accuracy | **100%** |
+| Refusal Behavior Accuracy | **100%** |
+| Average Generation Latency | **~1.11 sec** |
+| API Errors | **0** |
+
+The refusal test intentionally asks a question whose answer is not available in the indexed compliance documents.
+
+The assistant correctly responds that the retrieved documents do not contain enough information rather than generating an unsupported answer.
+
+> These results are based on a small prototype evaluation set and should not be interpreted as comprehensive evidence of production-level compliance reliability.
+
+---
+
+# 🔁 Reproducible Evaluation
 
 Evaluation scripts are available under:
 
@@ -389,7 +416,7 @@ Evaluation scripts are available under:
 evaluation/
 ```
 
-### Fraud Model Evaluation
+## Fraud Model Evaluation
 
 ```bash
 python evaluation/evaluate_fraud_model.py
@@ -406,7 +433,9 @@ Evaluates:
 - Confusion matrix
 - ROC curve
 
-### Model Comparison
+---
+
+## Model Comparison
 
 ```bash
 python evaluation/compare_models.py
@@ -419,25 +448,61 @@ Compares:
 - Gradient Boosting
 - XGBoost
 
-### Threshold Analysis
+---
+
+## Threshold Analysis
 
 ```bash
 python evaluation/threshold_analysis.py
 ```
 
-Measures precision, recall, and F1 across multiple classification thresholds.
+Measures precision, recall, and F1-score across multiple decision thresholds.
 
-### RAG Evaluation
+---
+
+## Retrieval Evaluation
 
 ```bash
 python evaluation/evaluate_rag.py
 ```
 
-Provides the initial retrieval evaluation framework.
+Evaluates retrieval behavior including Recall@K and retrieval latency.
 
 ---
 
-#  API Endpoints
+## RAG Answer Evaluation
+
+```bash
+python evaluation/evaluate_rag_answers.py
+```
+
+Evaluates generated answers for citation and refusal behavior.
+
+---
+
+# 📈 Evaluation Artifacts
+
+Generated experiment outputs are stored under:
+
+```text
+docs/results/
+```
+
+Examples include:
+
+```text
+confusion_matrix.png
+fraud_model_metrics.md
+linkedin_evaluation_dashboard.png
+model_comparison.csv
+rag_answer_evaluation.csv
+roc_curve.png
+threshold_analysis.csv
+```
+
+---
+
+# 🔌 API Endpoints
 
 | Endpoint | Method | Purpose |
 |---|---|---|
@@ -450,17 +515,17 @@ Provides the initial retrieval evaluation framework.
 
 ---
 
-#  Gradio Interface
+# 🖥️ Gradio Interface
 
 The project includes a Gradio interface for interacting with the backend.
 
-Start the FastAPI backend first:
+Start the FastAPI backend:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Then launch the interface:
+Then launch Gradio:
 
 ```bash
 python gradio_ui.py
@@ -470,17 +535,15 @@ The interface provides:
 
 - Transaction risk scoring
 - Compliance question answering
-- Compliance PDF upload
+- Compliance PDF upload and indexing
 
 ---
 
-#  Testing and Continuous Integration
+# 🧪 Testing & Continuous Integration
 
 The project uses **Pytest** for automated testing and **GitHub Actions** for continuous integration.
 
 The CI workflow runs automatically on pushes and pull requests to the `main` branch.
-
-Current CI checks include:
 
 ```text
 Code checkout
@@ -494,11 +557,11 @@ Flake8 validation
 Pytest
 ```
 
-The CI badge at the top of this README reflects the current workflow status.
+The CI badge at the top of the README reflects the current workflow status.
 
 ---
 
-#  Experiment Tracking
+# 📊 Experiment Tracking
 
 ML experiments are tracked using **MLflow**.
 
@@ -512,7 +575,7 @@ This makes the experiment-tracking configuration portable across local and noteb
 
 ---
 
-#  Monitoring
+# 📡 Monitoring
 
 FastAPI application metrics are instrumented using:
 
@@ -520,19 +583,24 @@ FastAPI application metrics are instrumented using:
 prometheus-fastapi-instrumentator
 ```
 
-The project also includes Prometheus/Grafana components for observability experiments.
+The project also contains Prometheus and Grafana components for observability experiments.
 
 ---
 
-#  Containerization
+# 🐳 Containerization
 
-The project includes Docker/Docker Compose components for local containerized execution.
+The project includes Docker and Docker Compose components for local containerized execution.
 
-This supports separation of application and observability services and provides a foundation for future deployment experiments.
+This provides a foundation for:
+
+- Reproducible environments
+- Application containerization
+- Monitoring services
+- Future deployment experiments
 
 ---
 
-#  Limitations
+# ⚠️ Limitations
 
 This repository is an **AI/ML research and engineering prototype**.
 
@@ -540,21 +608,22 @@ Important limitations include:
 
 - Transaction data is synthetically generated.
 - Model performance does not represent real banking fraud performance.
-- The current dataset is relatively small.
-- The current RAG evaluation benchmark is limited.
+- The current transaction dataset is relatively small.
+- RAG evaluation uses a limited benchmark.
+- Citation accuracy was measured on a small evaluation set.
 - Compliance answers should not be treated as legal or regulatory advice.
-- Real-world deployment would require stronger security, governance, validation, monitoring, and human oversight.
+- Real-world deployment would require stronger security, governance, validation, monitoring, access control, and human oversight.
 
 ---
 
-#  Future Research
+# 🚀 Future Research
 
 Future work includes:
 
-- Recall@K evaluation for RAG retrieval
+- Larger labeled compliance QA benchmark
+- Chunk-level retrieval evaluation
 - Groundedness and faithfulness evaluation
 - RAG vs. no-RAG experiments
-- Larger labeled compliance QA benchmark
 - Embedding-model comparison
 - Chunk-size and overlap experiments
 - Retrieval reranking
@@ -568,7 +637,7 @@ Future work includes:
 
 ---
 
-#  Project Structure
+# 📁 Project Structure
 
 ```text
 Genai-banking-risk-assistant/
@@ -591,9 +660,13 @@ Genai-banking-risk-assistant/
 │   ├── evaluate_fraud_model.py
 │   ├── compare_models.py
 │   ├── threshold_analysis.py
-│   └── evaluate_rag.py
+│   ├── evaluate_rag.py
+│   └── evaluate_rag_answers.py
 │
 ├── docs/
+│   ├── system-architecture.png
+│   ├── transaction-risk-demo.png
+│   ├── compliance-rag-demo.png
 │   └── results/
 │
 ├── .github/
@@ -608,10 +681,12 @@ Genai-banking-risk-assistant/
 
 ---
 
-## Research Perspective
+# 🎓 Research Perspective
 
 This project is designed not only as an application prototype but also as an experimental environment for studying the intersection of:
 
 **Machine Learning + Explainable AI + Generative AI + Information Retrieval + Responsible AI**
 
-The goal is to progressively evaluate each component rather than relying only on end-to-end demonstrations.
+The focus is on progressively evaluating individual system components rather than relying only on end-to-end demonstrations.
+
+The project demonstrates an engineering workflow that moves from **model development → evaluation → explainability → retrieval → grounded generation → API integration → interactive application → reproducible experimentation**.
