@@ -4,7 +4,7 @@
 
 An end-to-end AI/ML research prototype combining **machine learning, explainable AI, and Retrieval-Augmented Generation (RAG)** for banking transaction risk analysis and compliance question answering.
 
-## 📊 Evaluation Highlights
+## Evaluation Highlights
 
 ![Model & RAG Evaluation Dashboard](docs/results/linkedin_evaluation_dashboard.png)
 
@@ -17,7 +17,7 @@ An end-to-end AI/ML research prototype combining **machine learning, explainable
 - RAG refusal behavior accuracy: **100%**
 - Average RAG generation latency: **1.11 seconds**
 - API errors during RAG evaluation: **0**
-## 🖥️ Application Demo
+##  Application Demo
 
 ### Transaction Risk Scoring
 
@@ -41,7 +41,7 @@ The project explores two related problems:
 
 ---
 
-## 🎯 Motivation
+##  Motivation
 
 Financial institutions must identify suspicious transactions while allowing analysts to efficiently navigate complex regulatory and compliance information.
 
@@ -51,7 +51,7 @@ This project investigates how these approaches can be combined into a single exp
 
 ---
 
-## 🔬 Research Questions
+##  Research Questions
 
 This project investigates:
 
@@ -66,7 +66,7 @@ This project investigates:
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ![GenAI Banking Risk & Compliance Assistant Architecture](docs/system-architecture.png)
 
@@ -121,7 +121,7 @@ Context-grounded answer
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 ### Transaction Risk Scoring
 
@@ -177,7 +177,7 @@ Uploaded PDFs are:
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 | Component | Technology |
 |---|---|
@@ -199,7 +199,7 @@ Uploaded PDFs are:
 
 ---
 
-# 📊 Machine Learning Experiments
+#  Machine Learning Experiments
 
 ## Dataset
 
@@ -242,7 +242,7 @@ It also illustrates why accuracy alone can be misleading for fraud-detection pro
 
 ---
 
-## 🎚️ Classification Threshold Analysis
+##  Classification Threshold Analysis
 
 The Logistic Regression model was further evaluated across different classification thresholds.
 
@@ -275,7 +275,7 @@ A production system would require threshold selection based on independent valid
 
 ---
 
-## 🔍 Explainability
+##  Explainability
 
 SHAP is used to examine how individual transaction features influence model predictions.
 
@@ -290,7 +290,7 @@ This is particularly important for financial AI systems where model decisions ma
 
 ---
 
-# 🤖 Retrieval-Augmented Generation
+#  Retrieval-Augmented Generation
 
 The compliance assistant uses Retrieval-Augmented Generation to ground LLM responses in uploaded compliance documents.
 
@@ -332,7 +332,7 @@ This architecture is intended to reduce unsupported generation and improve answe
 
 ---
 
-## 📏 RAG Evaluation
+##  RAG Evaluation
 
 The repository contains an initial RAG evaluation framework.
 
@@ -381,7 +381,7 @@ answer groundedness and faithfulness.
 
 ---
 
-# 🧪 Reproducible Evaluation
+#  Reproducible Evaluation
 
 Evaluation scripts are available under:
 
@@ -437,7 +437,7 @@ Provides the initial retrieval evaluation framework.
 
 ---
 
-# 🌐 API Endpoints
+#  API Endpoints
 
 | Endpoint | Method | Purpose |
 |---|---|---|
@@ -450,7 +450,7 @@ Provides the initial retrieval evaluation framework.
 
 ---
 
-# 🖥️ Gradio Interface
+#  Gradio Interface
 
 The project includes a Gradio interface for interacting with the backend.
 
@@ -474,7 +474,7 @@ The interface provides:
 
 ---
 
-# 🧪 Testing and Continuous Integration
+#  Testing and Continuous Integration
 
 The project uses **Pytest** for automated testing and **GitHub Actions** for continuous integration.
 
@@ -498,7 +498,7 @@ The CI badge at the top of this README reflects the current workflow status.
 
 ---
 
-# 📈 Experiment Tracking
+#  Experiment Tracking
 
 ML experiments are tracked using **MLflow**.
 
@@ -512,7 +512,7 @@ This makes the experiment-tracking configuration portable across local and noteb
 
 ---
 
-# 📊 Monitoring
+#  Monitoring
 
 FastAPI application metrics are instrumented using:
 
@@ -524,7 +524,7 @@ The project also includes Prometheus/Grafana components for observability experi
 
 ---
 
-# 🐳 Containerization
+#  Containerization
 
 The project includes Docker/Docker Compose components for local containerized execution.
 
@@ -532,7 +532,7 @@ This supports separation of application and observability services and provides 
 
 ---
 
-# ⚠️ Limitations
+#  Limitations
 
 This repository is an **AI/ML research and engineering prototype**.
 
@@ -547,7 +547,7 @@ Important limitations include:
 
 ---
 
-# 🔭 Future Research
+#  Future Research
 
 Future work includes:
 
@@ -568,7 +568,7 @@ Future work includes:
 
 ---
 
-# 📁 Project Structure
+#  Project Structure
 
 ```text
 Genai-banking-risk-assistant/
